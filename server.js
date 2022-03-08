@@ -21,9 +21,10 @@ app.use(
     credentials: true,
   })
 );
-
 app.use("/api/record", record);
-
+app.use("/", (req, res) => {
+  res.send("heelo");
+});
 const PORT = process.env.PORT || 5000;
 
 const server = app.listen(PORT, console.log(`Server started on Port ${PORT}`));
