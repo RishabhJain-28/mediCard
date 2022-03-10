@@ -1,7 +1,9 @@
 const express = require("express");
-const Record = require("../models/Record");
 const sendRes = require("../uitl/sendRes");
 const router = express.Router();
+const { nanoid } = require("nanoid");
+const Record = require("../models/Record");
+const Link = require("../models/Link");
 
 router.get("/:id", async (req, res) => {
   const { id } = req.params;
@@ -23,4 +25,77 @@ router.post("/create", async (req, res) => {
   return sendRes(res, { data: { recordId: newRecord._id } });
 });
 
+router.get("/getFromLink/:shortId", async (req, res) => {
+  const { shortId } = req.params;
+  const link = await Link.findOne({ shortId });
+  if (!link) {
+    return sendRes(res, { data: null, error: "no link found" }, 400);
+  }
+
+  const record = await Record.findById(link.pId);
+  if (!record) {
+    return sendRes(res, { data: null, error: "no record found" }, 400);
+  }
+
+  sendRes(res, { data: record, error: null });
+});
+
+router.post("/genLink", async (req, res) => {
+  const { id } = req.body;
+
+  const old = await Link.findOne({ pId: id });
+  if (old) {
+    return sendRes(res, { data: { shortId: old.shortId }, error: null });
+  }
+
+  const shortId = nanoid(10);
+  console.log("shortid : ", shortId);
+
+  const link = new Link({
+    shortId,
+    pId: id,
+  });
+  await link.save();
+
+  sendRes(res, {
+    data: {
+      shortId,
+    },
+    error: null,
+  });
+});
+
+router.put("/update", async (req, res) => {
+  const { shortId, newData } = req.body;
+
+  const link = await Link.findOne({ shortId });
+  if (!link) {
+    return sendRes(res, { data: null, error: "no link found" }, 400);
+  }
+
+  const record = await Record.findById(link.pId);
+  if (!record) {
+    return sendRes(res, { data: null, error: "no record found" }, 400);
+  }
+  record.recordData = [...record.recordData, newData];
+  await record.save();
+
+  sendRes(res, {
+    data: {
+      shortId,
+      record,
+    },
+    error: null,
+  });
+});
+
+router.delete("/link/:shortId", async (req, res) => {
+  const { shortId } = req.params;
+  const link = await Link.findOneAndDelete({ shortId });
+  if (!link) {
+    return sendRes(res, { data: null, error: "no link found" }, 400);
+  }
+
+  sendRes(res, { data: true, error: null });
+});
 module.exports = router;

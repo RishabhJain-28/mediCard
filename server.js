@@ -48,7 +48,7 @@ app.use(passport.session());
 app.use("/auth", require("./routes/auth"));
 
 app.use("/api/record", record);
-app.use("/", (req, res) => {
+app.get("/", (req, res) => {
   res.send("heelo");
 });
 const PORT = process.env.PORT || 5000;
