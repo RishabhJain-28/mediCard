@@ -77,7 +77,8 @@ router.put("/update", async (req, res) => {
   if (!record) {
     return sendRes(res, { data: null, error: "no record found" }, 400);
   }
-  record.recordData = [...record.recordData, newData];
+  record.recordData = [...record.recordData, newData.recordData];
+  record.reports = [...record.reports, newData.report];
   await record.save();
 
   sendRes(res, {

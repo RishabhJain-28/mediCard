@@ -9,7 +9,7 @@ const recordSchema = new mongoose.Schema({
     },
   ],
   reports: {
-    type: [{ type: String }],
+    type: [{ type: String, type: String }],
     default: [],
   },
 });
