@@ -11,7 +11,6 @@ const envPath = path.join(
   __dirname,
   process.env.NODE_ENV === "development" ? "/dev.env" : "/.env"
 );
-
 // require("dotenv").config({ path: "./dev.env" });
 require("dotenv").config({ path: envPath });
 const cors = require("cors");
