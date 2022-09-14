@@ -2,7 +2,6 @@ const express = require("express");
 const mongoose = require("mongoose");
 const session = require("express-session");
 
-const passport = require("passport");
 const MongoStore = require("connect-mongo");
 const { ensureAuth, ensureGuest } = require("./middleware/auth");
 
@@ -30,8 +29,6 @@ app.use(
   })
 );
 
-require("./config/passport")(passport);
-
 app.use(
   session({
     secret: process.env.SESSION_SECRET,
@@ -40,9 +37,6 @@ app.use(
     store: MongoStore.create({ mongoUrl: process.env.MONGO_URI }),
   })
 );
-
-app.use(passport.initialize());
-app.use(passport.session());
 
 app.use("/auth", require("./routes/auth"));
 
